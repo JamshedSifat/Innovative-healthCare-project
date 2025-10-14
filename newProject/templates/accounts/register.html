@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gray-900 bg-opacity-50 py-8">
+    <div class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl w-full max-w-2xl">
+        <h2 class="text-3xl font-bold text-center text-white mb-8">Register</h2>
+        <form method="post" action="{% url 'accounts:register' %}" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% csrf_token %}
+            <div>
+                <label for="u_name" class="block text-sm font-medium text-white mb-2">Username</label>
+                <input type="text" name="u_name" required
+                       class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+            </div>
+            <div>
+                <label for="u_fname" class="block text-sm font-medium text-white mb-2">First name</label>
+                <input type="text" name="u_fname" required
+                       class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+            </div>
+            <div>
+                <label for="u_lname" class="block text-sm font-medium text-white mb-2">Last name</label>
+                <input type="text" name="u_lname" required
+                       class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+            </div>
+            <div>
+                <label for="u_email" class="block text-sm font-medium text-white mb-2">Email</label>
+                <input type="email" name="u_email" required
+                       class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+            </div>
+            <div>
+                <label for="u_password" class="block text-sm font-medium text-white mb-2">Password</label>
+                <input type="password" name="u_password" required
+                       class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+            </div>
+            <div>
+                <label for="u_age" class="block text-sm font-medium text-white mb-2">Age</label>
+                <input type="number" name="u_age" required
+                       class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+            </div>
+            <div class="md:col-span-2">
+                <label for="u_address" class="block text-sm font-medium text-white mb-2">Address</label>
+                <input type="text" name="u_address" required
+                       class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+            </div>
+            <div>
+                <label for="u_mobile" class="block text-sm font-medium text-white mb-2">Mobile</label>
+                <input type="text" name="u_mobile" required
+                       class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-white mb-2">Gender:</label>
+                <div class="flex space-x-4 mt-2">
+                    <label class="flex items-center text-white">
+                        <input type="radio" name="u_gender" value="Male" id="male" required class="mr-2 text-blue-500">
+                        Male
+                    </label>
+                    <label class="flex items-center text-white">
+                        <input type="radio" name="u_gender" value="Female" id="female" required class="mr-2 text-blue-500">
+                        Female
+                    </label>
+                </div>
+            </div>
+            <div class="md:col-span-2">
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 rounded-lg hover:from-blue-600 hover:to-purple-700 transition duration-300 transform hover:scale-105">
+                    Register
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
