@@ -4,24 +4,40 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="flex items-center justify-center min-h-screen bg-gray-900 bg-opacity-50">
-    <div class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl w-full max-w-md">
-        <h2 class="text-3xl font-bold text-center text-white mb-8">Login</h2>
-        <form method="post" action="{% url 'accounts:login' %}" class="space-y-6">
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+
+<div class="login-container">
+    <div class="login-card">
+        <h2 class="login-title">Login</h2>
+
+        <form method="post" action="{% url 'accounts:login' %}" class="login-form">
             {% csrf_token %}
-            <div>
-                <label for="u_name" class="block text-sm font-medium text-white mb-2">Username</label>
-                <input type="text" name="u_name" id="u_name" required
-                       class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+
+            <div class="form-group">
+                <label for="u_name" class="form-label">Username</label>
+                <input
+                    type="text"
+                    name="u_name"
+                    id="u_name"
+                    required
+                    class="form-input"
+                    placeholder="Enter your username"
+                >
             </div>
-            <div>
-                <label for="u_password" class="block text-sm font-medium text-white mb-2">Password</label>
-                <input type="password" name="u_password" id="u_password" required
-                       class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+
+            <div class="form-group">
+                <label for="u_password" class="form-label">Password</label>
+                <input
+                    type="password"
+                    name="u_password"
+                    id="u_password"
+                    required
+                    class="form-input"
+                    placeholder="Enter your password"
+                >
             </div>
-            <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 rounded-lg hover:from-blue-600 hover:to-purple-700 transition duration-300 transform hover:scale-105">
-                Login
-            </button>
+
+            <button type="submit" class="login-btn">Login</button>
         </form>
     </div>
 </div>
