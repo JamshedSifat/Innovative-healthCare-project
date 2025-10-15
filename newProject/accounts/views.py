@@ -41,3 +41,22 @@ def register(request):
             return redirect("home")
 
     return render(request, "accounts/register.html")
+def login(request):
+    if request.method == "POST":
+        username = request.POST.get("u_name")
+        password = request.POST.get("u_password")
+
+        if not username or not password:
+            messages.error(request, "Username and password are required.")
+            return redirect("accounts:login")
+
+        authenticated_user = authenticate(request, username=username, password=password)
+
+        if authenticated_user is not None:
+            auth_login(request, authenticated_user)
+            messages.success(request, f"Welcome, {username}!")
+            return redirect("home")
+        else:
+            messages.error(request, "Invalid username or password.")
+
+    return render(request, "accounts/login.html")
