@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-900 bg-opacity-50 py-8">
+    <div class="max-w-4xl mx-auto px-4">
+        <!-- Profile View Mode -->
+        <div id="userProfileView" class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl mb-8">
+            <h2 class="text-3xl font-bold text-white mb-6 text-center">User Profile</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-white">
+                <p class="text-lg"><strong class="text-blue-300">Username:</strong> {{ user_profile.user.username }}</p>
+                <p class="text-lg"><strong class="text-blue-300">Name:</strong> {{ user_profile.user.first_name }} {{ user_profile.user.last_name }}</p>
+                <p class="text-lg"><strong class="text-blue-300">Email:</strong> {{ user_profile.user.email }}</p>
+                <p class="text-lg"><strong class="text-blue-300">Age:</strong> {{ user_profile.age }}</p>
+                <p class="text-lg md:col-span-2"><strong class="text-blue-300">Address:</strong> {{ user_profile.address }}</p>
+                <p class="text-lg"><strong class="text-blue-300">Mobile:</strong> {{ user_profile.mobile }}</p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 mt-8 justify-center">
+                <button id="editButton" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105">
+                    Edit profile
+                </button>
+                <form method="post" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" name="delete_account" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105">
+                        Delete Account
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Profile Edit Mode -->
+        <div id="userProfileEdit" class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl mb-8 hidden">
+            <form id="profileForm" method="post" class="space-y-6">
+                <h2 class="text-3xl font-bold text-white mb-6 text-center">Edit your information</h2>
+                {% csrf_token %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{ user_form.as_p }}
+                    {{ profile_form.as_p }}
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button type="button" id="saveButton" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105">
+                        Save
+                    </button>
+                    <button type="button" id="cancelButton" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Appointments Section -->
+        {% if appointments %}
+        <div class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl mb-8">
+            <h2 class="text-3xl font-bold text-white mb-6 text-center">Appointments</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for appointment in appointments %}
+                <div class="bg-white bg-opacity-20 rounded-lg p-6 text-white">
+                    <p class="mb-2"><strong class="text-blue-300">Doctor:</strong> {{ appointment.doctor.name }}</p>
+                    <p class="mb-2"><strong class="text-blue-300">Date:</strong> {{ appointment.appointment_date }}</p>
+                    <p class="mb-2"><strong class="text-blue-300">Time:</strong> {{ appointment.doctor_time_slot.start_time }} - {{ appointment.doctor_time_slot.end_time }}</p>
+                    <p class="mb-2"><strong class="text-blue-300">Serial:</strong> {{ appointment.serial_number }}</p>
+                    <p class="mb-4"><strong class="text-blue-300">Description:</strong> {{ appointment.description }}</p>
+                    <form method="post" action="{% url 'appointments:cancel_appointment' appointment.id appointment.doctor.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg transition duration-300">
+                            Cancel Appointment
+                        </button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Payment History Section -->
+        {% if bills %}
+        <div class="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 shadow-2xl">
+            <h2 class="text-3xl font-bold text-white mb-6 text-center">Payment History</h2>
+            <div class="space-y-6">
+                {% for bill in bills %}
+                <div class="bg-white bg-opacity-20 rounded-lg p-6 text-white">
+                    <p class="mb-2"><strong class="text-blue-300">Customer:</strong> {{ bill.customer.username }}</p>
+                    <div class="mb-4">
+                        <strong class="text-blue-300">Items:</strong>
+                        <ul class="list-none mt-2 space-y-1">
+                            {% for bill_item in bill.billitem_set.all %}
+                                <li class="ml-4">{{ bill_item.accessory.p_name }} ({{ bill_item.quantity }}x{{ bill_item.accessory.p_cost }}={{ bill_item.total_cost }}tk)</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <p class="mb-2"><strong class="text-blue-300">Total:</strong> {{ bill.total_item_cost }}tk</p>
+                    <p><strong class="text-blue-300">Date:</strong> {{ bill.created_at }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const viewMode = document.getElementById("userProfileView");
+        const editMode = document.getElementById("userProfileEdit");
+        const editButton = document.getElementById("editButton");
+        const saveButton = document.getElementById("saveButton");
+        const cancelButton = document.getElementById("cancelButton");
+        const profileForm = document.getElementById("profileForm");
+
+        editButton.addEventListener("click", () => {
+            viewMode.classList.add("hidden");
+            editMode.classList.remove("hidden");
+        });
+
+        cancelButton.addEventListener("click", () => {
+            viewMode.classList.remove("hidden");
+            editMode.classList.add("hidden");
+        });
+
+        saveButton.addEventListener("click", () => {
+            profileForm.submit();
+        });
+    });
+</script>
+{% endblock %}
