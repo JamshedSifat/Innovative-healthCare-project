@@ -15,12 +15,20 @@
         <form method="post" action="">
             {% csrf_token %}
 
+<<<<<<< HEAD
+            <div class="text-black form-group mb-4">
+=======
             <div class="form-group mb-4">
+>>>>>>> 95193974668127615266de434effc1643d28f090
                 <label for="appointment_date" class="block text-gray-700 font-medium mb-2">Select Appointment Date:</label>
                 <input type="date" id="appointment_date" name="appointment_date" required class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-400 focus:outline-none">
             </div>
 
+<<<<<<< HEAD
+            <div class="text-black form-group mb-4">
+=======
             <div class="form-group mb-4">
+>>>>>>> 95193974668127615266de434effc1643d28f090
                 <label for="appointment_time" class="block text-gray-700 font-medium mb-2">Select Appointment Time:</label>
                 <select id="appointment_time" name="appointment_time">
                     {% for slot in doctor.doctortimeslot_set.all %}
@@ -29,7 +37,11 @@
                 </select>
             </div>
 
+<<<<<<< HEAD
+            <div class="text-black form-group mb-6">
+=======
             <div class="form-group mb-6">
+>>>>>>> 95193974668127615266de434effc1643d28f090
                 <label for="description" class="block text-gray-700 font-medium mb-2">Disease Description:</label>
                 <textarea id="description" name="description" rows="7" maxlength="1000" required class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-400 focus:outline-none"></textarea>
             </div>
