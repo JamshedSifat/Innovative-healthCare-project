@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra-styles %}
+<link rel="stylesheet" href="{% static 'css/cart.css' %}" />
+{% endblock %}
+
+{% block title %}Shopping Cart{% endblock %}
+
+{% block content %}
+<div class="cart-page">
+    {% if cart_items %}
+        <!-- Cart Header -->
+        <div class="cart-header">
+            <h1 class="cart-title">
+                🛒 Your Shopping Cart
+                <span class="cart-count">{{ cart_items|length }} item{{ cart_items|length|pluralize }}</span>
+            </h1>
+        </div>
+
+        <!-- Cart Items -->
+        <div class="cart-items">
+            {% for item in cart_items %}
+                <div class="cart-item">
+                    <!-- Product Image -->
+                    <div class="item-image">
+                        {% if item.accessory.p_image %}
+                            <img src="{{ item.accessory.p_image.url }}" alt="{{ item.accessory.p_name }}">
+                        {% else %}
+                            <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #e9ecef; color: #6c757d; font-size: 12px;">
+                                No Image
+                            </div>
+                        {% endif %}
+                    </div>
+
+<!--                     Product Info -->
+                    <div class="item-info">
+                        <h3>{{ item.accessory.p_name }}</h3>
+                        <div class="item-price">৳{{ item.accessory.p_cost }}</div>
+                        <div class="item-vendor">🏢 {{ item.accessory.v_name }}</div>
+                    </div>
+
+                    <div class="quantity-controls">
+                        <form method="post" action="{% url 'accessories:update_cart' item.accessory.id %}" style="display: flex; align-items: center; gap: 8px;">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.accessory.p_count }}" class="qty-input">
+                            <button type="submit" class="update-btn">Update</button>
+                        </form>
+                        <small style="color: #666; font-size: 11px;">Max: {{ item.accessory.p_count }}</small>
+                    </div>
+                    <div class="item-total">
+                        ৳{{ item.total_cost }}
+                    </div>
+
+                    <form method="post" action="{% url 'accessories:remove_from_cart' item.accessory.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="remove-btn" onclick="return confirm('Remove this item from cart?')">
+                            🗑️ Remove
+                        </button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="cart-summary">
+            <div style="color: #28a745;" class="summary-row">
+                <span>Subtotal ({{ cart_items|length }} item{{ cart_items|length|pluralize }}):</span>
+                <span>৳{{ total_cost }}</span>
+            </div>
+            <div class="summary-row">
+                <span style="color: #28a745;">Shipping:</span>
+                <span style="color: #28a745;">Free</span>
+            </div>
+            <div class="summary-row">
+                <span>Total Amount:</span>
+                <span class="total-amount">৳{{ total_cost }}</span>
+            </div>
+        </div>
+
+        <div class="cart-actions">
+            <a href="{% url 'accessories:products' %}" class="action-btn continue-btn">
+                ← Continue Shopping
+            </a>
+            <a href="{% url 'accessories:checkout' %}" class="action-btn checkout-btn">
+                Proceed to Checkout →
+            </a>
+        </div>
+
+    {% else %}
+        <div class="empty-cart">
+            <div class="empty-cart-icon">🛒</div>
+            <h2>Your cart is empty</h2>
+            <p>Looks like you haven't added any medical products to your cart yet.</p>
+            <a href="{% url 'accessories:products' %}" class="action-btn continue-btn">
+                🏥 Browse Medical Products
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+
+{% endblock %}
