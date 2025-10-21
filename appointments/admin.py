@@ -1,29 +1,22 @@
 from django.contrib import admin
-<<<<<<< HEAD
-from .models import *
-
-admin.site.register(Doctor)
-admin.site.register(DoctorTimeSlot)
-admin.site.register(Appointment)
-admin.site.register(Hospital)
-admin.site.register(Blood)
-=======
-from .models import Doctor, Appointment, DoctorTimeSlot
-
+from .models import Doctor, DoctorTimeSlot, Appointment, Hospital, Blood
 @admin.register(Doctor)
 class DoctorAdmin(admin.ModelAdmin):
-    list_display = ['name', 'specialty', 'status', 'cost', 'available_spots']
-    list_filter = ['specialty', 'status']
-    search_fields = ['name', 'specialty']
-
+    list_display = ('name', 'specialty', 'status', 'cost', 'available_spots')
+    search_fields = ('name', 'specialty')
 @admin.register(DoctorTimeSlot)
 class DoctorTimeSlotAdmin(admin.ModelAdmin):
-    list_display = ['doctor', 'start_time', 'end_time', 'is_available']
-    list_filter = ['doctor', 'is_available']
-
+    list_display = ('doctor', 'start_time', 'end_time', 'is_available')
+    list_filter = ('doctor', 'is_available')
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
-    list_display = ['user', 'doctor', 'appointment_date', 'created_at']
-    list_filter = ['appointment_date', 'doctor']
-    search_fields = ['user__username', 'doctor__name']
->>>>>>> 95193974668127615266de434effc1643d28f090
+    list_display = ('user', 'doctor', 'appointment_date', 'serial_number')
+    list_filter = ('appointment_date', 'doctor')
+@admin.register(Hospital)
+class HospitalAdmin(admin.ModelAdmin):
+    list_display = ('hospital_name', 'location', 'capacity')
+    search_fields = ('hospital_name', 'location')
+@admin.register(Blood)
+class BloodAdmin(admin.ModelAdmin):
+    list_display = ('blood_group', 'quantity', 'expiry_date')
+    list_filter = ('blood_group',)
