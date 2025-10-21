@@ -1,12 +1,9 @@
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 SECRET_KEY = 'django-insecure-u8pcu(+%6ff=i7-_^mm2^q_7$id_b(nn2wo8i7+(s+(eu3sc-u'
-
 DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -18,8 +15,8 @@ INSTALLED_APPS = [
     'accounts',
     'appointments',
     'accessories',
+    'medicine_reminders',
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -35,7 +32,7 @@ ROOT_URLCONF = 'newProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'templates'],  # project-wide templates directory
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -58,18 +55,10 @@ DATABASES = {
 }
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 LANGUAGE_CODE = 'en-us'
@@ -85,3 +74,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Auth redirects
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'home'
