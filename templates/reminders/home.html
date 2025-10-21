@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Medicine Reminders{% endblock %}
+
+{% block extra-styles %}
+<!-- Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 py-6 px-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- Page Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">💊 Medicine Reminders</h1>
+            <a href="{% url 'reminders:add_reminder' %}"
+               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition">
+                ➕ Add New Reminder
+            </a>
+        </div>
+
+        <!-- Today's Schedule -->
+        <div class="bg-white rounded-lg shadow mb-6 p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">📅 Today's Schedule - {{ today|date:"F j, Y" }}</h2>
+
+            {% if today_schedule %}
+                <div class="space-y-3">
+                    {% for item in today_schedule %}
+                        <div class="border border-gray-200 rounded-lg p-4 {% if item.due %}bg-yellow-50 border-yellow-300{% endif %}">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="font-semibold text-gray-800">{{ item.medicine.name }}</div>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                                            {{ item.medicine.dosage_amount }} {{ item.medicine.get_dosage_unit_display }}
+                                        </span>
+                                        <span class="text-gray-600 text-sm">{{ item.reminder_time.time|time:"g:i A" }}</span>
+                                    </div>
+                                    {% if item.medicine.instructions %}
+                                        <div class="text-sm text-gray-600 mt-2">📝 {{ item.medicine.instructions }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="ml-4">
+                                    {% if item.taken %}
+                                        <span class="bg-green-100 text-green-800 text-sm px-3 py-1 rounded">✅ Taken</span>
+                                    {% else %}
+                                        <form method="post" action="{% url 'reminders:mark_taken' item.medicine.id item.reminder_time.id %}" class="inline">
+                                            {% csrf_token %}
+                                            <button type="submit"
+                                                    class="bg-green-600 hover:bg-green-700 text-white text-sm px-3 py-1 rounded transition">
+                                                Mark as Taken
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8 text-gray-500">
+                    {% if user.is_superuser %}
+                        <p>No medicines scheduled for today!</p>
+                        <p class="mt-2"><strong>Admin Note:</strong> Medicines added in Django admin will appear here for the assigned user.</p>
+                        <p>Current user: <strong>{{ user.username }}</strong></p>
+                    {% else %}
+                        <p>No medicines scheduled for today! 🎉</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Active Reminders List -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">📋 All Active Reminders</h2>
+                <a href="{% url 'reminders:history' %}"
+                   class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded transition">
+                    📊 View History
+                </a>
+            </div>
+
+            {% if active_reminders %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for medicine in active_reminders %}
+                        <div class="border border-gray-200 rounded-lg p-4 {% if not medicine.is_active %}opacity-50{% endif %}">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="font-semibold text-gray-800">{{ medicine.name }}</h3>
+                                <span class="text-sm px-2 py-1 rounded {% if medicine.is_active %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-500{% endif %}">
+                                    {% if medicine.is_active %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </div>
+
+                            <div class="text-sm text-blue-600 font-medium mb-3">
+                                {{ medicine.dosage_amount }} {{ medicine.get_dosage_unit_display }}
+                            </div>
+
+                            <div class="space-y-2 text-sm text-gray-600 mb-4">
+                                <div>
+                                    <strong>Times:</strong>
+                                    {% for time in medicine.reminder_times.all %}
+                                        <span class="bg-gray-100 px-2 py-1 rounded text-xs ml-1">{{ time.time|time:"g:i A" }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div><strong>Frequency:</strong> {{ medicine.get_frequency_display }}</div>
+                                <div><strong>Duration:</strong> {{ medicine.start_date }} to {{ medicine.end_date }}</div>
+                                {% if medicine.instructions %}
+                                    <div><strong>Instructions:</strong> {{ medicine.instructions|truncatewords:10 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="flex gap-2">
+                                <a href="{% url 'reminders:edit_reminder' medicine.id %}"
+                                   class="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3 rounded text-sm transition">
+                                    ✏️ Edit
+                                </a>
+                                <a href="{% url 'reminders:delete_reminder' medicine.id %}"
+                                   class="flex-1 text-center bg-red-100 hover:bg-red-200 text-red-700 py-2 px-3 rounded text-sm transition">
+                                    🗑️ Delete
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8 text-gray-500">
+                    {% if user.is_superuser %}
+                        <p>No active reminders found for user: <strong>{{ user.username }}</strong></p>
+                        <div class="mt-4 text-left bg-gray-50 p-4 rounded-lg inline-block">
+                            <p><strong>Admin Tip:</strong> When adding medicines in Django admin, make sure to:</p>
+                            <ul class="mt-2 space-y-1 text-sm">
+                                <li>• Assign the medicine to user: <strong>{{ user.username }}</strong></li>
+                                <li>• Set start date to today or earlier</li>
+                                <li>• Set end date to future</li>
+                                <li>• Check "Is active" checkbox</li>
+                                <li>• Add reminder times in the inline section</li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <p>No active reminders found.</p>
+                    {% endif %}
+                    <div class="mt-4">
+                        <a href="{% url 'reminders:add_reminder' %}"
+                           class="text-blue-600 hover:text-blue-700 underline">
+                            Add your first reminder!
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Debug Info for Admin -->
+        {% if user.is_superuser %}
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-6">
+                <h3 class="font-semibold text-gray-700 mb-2">🔧 Debug Info (Admin Only)</h3>
+                <div class="text-sm text-gray-600 space-y-1">
+                    <p><strong>Current User:</strong> {{ user.username }}</p>
+                    <p><strong>Today's Date:</strong> {{ today }}</p>
+                    <p><strong>Total Medicines in System:</strong> {{ total_medicines_count }}</p>
+                    <p><strong>User's Medicines:</strong> {{ user_medicines_count }}</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
