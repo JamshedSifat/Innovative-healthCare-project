@@ -4,30 +4,18 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
-
 from .models import *
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 95193974668127615266de434effc1643d28f090
 def appointment(request):
     doctors = Doctor.objects.all()
     return render(request, "appointments/appointment.html", {'doctors': doctors})
-
-<<<<<<< HEAD
-=======
-
->>>>>>> 95193974668127615266de434effc1643d28f090
 def doctor_search(request):
     query_d = request.GET.get('q')
-
     if query_d:
         words = query_d.split()
         name_query = Q()
         specialty_query = Q()
         status_query = Q()
-
         for word in words:
             if word.lower() == "available":
                 status_query = Q(status=True)
@@ -41,14 +29,10 @@ def doctor_search(request):
     else:
         messages.error(request, "Search bar was empty")
         return redirect('appointments:appointment')
-
     if not doctors:
         messages.error(request, "No doctors found.")
         return redirect('appointments:appointment')
-
     return render(request, 'appointments/appointment.html', {'doctors': doctors})
-
-<<<<<<< HEAD
 @login_required
 def create_appointment(request, doctor_id):
     doctor = Doctor.objects.get(id=doctor_id)
@@ -112,11 +96,9 @@ def cancel_appointment(request, appointment_id, doctor_id):
 def emergency(request):
     hospitals = Hospital.objects.all()
     return render(request, "appointments/emergency.html", {'hospitals': hospitals})
-
 def blood_search(request):
     query = request.GET.get('q')
     hospitals = Hospital.objects.all()
-
     if query:
         hospitals = hospitals.filter(
             Q(hospital_name__icontains=query) | Q(location__icontains=query)
@@ -131,12 +113,10 @@ def blood_search(request):
         return redirect('appointments:emergency')
 
     return render(request, 'appointments/emergency.html', {'hospitals': hospitals})
-=======
 
 @login_required
 def create_appointment(request, doctor_id):
     doctor = get_object_or_404(Doctor, id=doctor_id)
-
     if request.method == 'POST':
         description = request.POST.get('description', '')
         appointment_date = request.POST.get('appointment_date')
@@ -144,12 +124,10 @@ def create_appointment(request, doctor_id):
         if not appointment_date:
             messages.error(request, "Please select an appointment date.")
             return redirect('appointments:appointment')
-
         # Check if doctor has available spots
         if doctor.available_spots <= 0:
             messages.error(request, "No available spots for this doctor.")
             return redirect('appointments:appointment')
-
         # Create appointment
         appointment = Appointment.objects.create(
             user=request.user,
@@ -158,13 +136,11 @@ def create_appointment(request, doctor_id):
             appointment_date=appointment_date,
             serial_number=Appointment.objects.filter(doctor=doctor, appointment_date=appointment_date).count() + 1
         )
-
         # Decrease available spots
         doctor.available_spots -= 1
         doctor.save()
-
         messages.success(request, f"Appointment booked successfully with Dr. {doctor.name}")
         return redirect('appointments:appointment')
-
+        
     return render(request, 'appointments/create_appointment.html', {'doctor': doctor})
->>>>>>> 95193974668127615266de434effc1643d28f090
+
