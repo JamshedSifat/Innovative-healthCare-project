@@ -3,11 +3,8 @@
 
 {% block extra-styles %}
 <link rel="stylesheet" href="{% static 'css/products.css' %}" />
-
 {% endblock %}
-
 {% block title %}Medical Products{% endblock %}
-
 {% block content %}
 <div class="products-page">
     <!-- Search Section -->
@@ -24,7 +21,6 @@
             </p>
         {% endif %}
     </div>
-
     <!-- Products Grid -->
     {% if products %}
         <div class="products-grid">
@@ -94,7 +90,6 @@
                 </a>
             </div>
         {% endif %}
-
     {% else %}
         <!-- No Products Found -->
         <div class="no-products">
