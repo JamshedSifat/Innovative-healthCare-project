@@ -1,6 +1,5 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -9,30 +8,35 @@ from .models import *
 def appointment(request):
     doctors = Doctor.objects.all()
     return render(request, "appointments/appointment.html", {'doctors': doctors})
+
 def doctor_search(request):
     query_d = request.GET.get('q')
+
     if query_d:
         words = query_d.split()
-        name_query = Q()
-        specialty_query = Q()
-        status_query = Q()
+        doctors = Doctor.objects.none()
+
         for word in words:
             if word.lower() == "available":
-                status_query = Q(status=True)
+                doctors = doctors | Doctor.objects.filter(status=True)
             elif word.lower() == "unavailable":
-                status_query = Q(status=False)
+                doctors = doctors | Doctor.objects.filter(status=False)
             else:
-                name_query |= Q(name__icontains=word)
-                specialty_query |= Q(specialty__icontains=word)
-
-        doctors = Doctor.objects.filter(name_query | specialty_query, status_query)
+                doctors = doctors | Doctor.objects.filter(
+                    name__icontains=word
+                ) | Doctor.objects.filter(
+                    specialty__icontains=word
+                )
     else:
         messages.error(request, "Search bar was empty")
         return redirect('appointments:appointment')
+
     if not doctors:
         messages.error(request, "No doctors found.")
         return redirect('appointments:appointment')
+
     return render(request, 'appointments/appointment.html', {'doctors': doctors})
+
 @login_required
 def create_appointment(request, doctor_id):
     doctor = Doctor.objects.get(id=doctor_id)
@@ -96,14 +100,20 @@ def cancel_appointment(request, appointment_id, doctor_id):
 def emergency(request):
     hospitals = Hospital.objects.all()
     return render(request, "appointments/emergency.html", {'hospitals': hospitals})
+
 def blood_search(request):
     query = request.GET.get('q')
     hospitals = Hospital.objects.all()
+
     if query:
         hospitals = hospitals.filter(
-            Q(hospital_name__icontains=query) | Q(location__icontains=query)
-            | Q(blood_samples__blood_group__iexact=query)
-        ).distinct()
+            hospital_name__icontains=query
+        ) | hospitals.filter(
+            location__icontains=query
+        ) | hospitals.filter(
+            blood_samples__blood_group__iexact=query
+        )
+        hospitals = hospitals.distinct()
     else:
         messages.error(request, "Search bar was empty")
         return redirect('appointments:emergency')
@@ -113,34 +123,3 @@ def blood_search(request):
         return redirect('appointments:emergency')
 
     return render(request, 'appointments/emergency.html', {'hospitals': hospitals})
-
-@login_required
-def create_appointment(request, doctor_id):
-    doctor = get_object_or_404(Doctor, id=doctor_id)
-    if request.method == 'POST':
-        description = request.POST.get('description', '')
-        appointment_date = request.POST.get('appointment_date')
-
-        if not appointment_date:
-            messages.error(request, "Please select an appointment date.")
-            return redirect('appointments:appointment')
-        # Check if doctor has available spots
-        if doctor.available_spots <= 0:
-            messages.error(request, "No available spots for this doctor.")
-            return redirect('appointments:appointment')
-        # Create appointment
-        appointment = Appointment.objects.create(
-            user=request.user,
-            doctor=doctor,
-            description=description,
-            appointment_date=appointment_date,
-            serial_number=Appointment.objects.filter(doctor=doctor, appointment_date=appointment_date).count() + 1
-        )
-        # Decrease available spots
-        doctor.available_spots -= 1
-        doctor.save()
-        messages.success(request, f"Appointment booked successfully with Dr. {doctor.name}")
-        return redirect('appointments:appointment')
-        
-    return render(request, 'appointments/create_appointment.html', {'doctor': doctor})
-
