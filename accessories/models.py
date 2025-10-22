@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Model for storing product/accessory information
 class Accessory(models.Model):
     p_name = models.CharField(max_length=100, help_text="Product name")
     p_cost = models.DecimalField(max_digits=10, decimal_places=2, help_text="Price in Taka")
@@ -16,16 +15,14 @@ class Accessory(models.Model):
         return self.p_name
 
     class Meta:
-        ordering = ['-created_at']  # Show newest products first
+        ordering = ['-created_at'] 
 
-# Model for storing items in user's shopping cart
 class CartItem(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     accessory = models.ForeignKey(Accessory, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    # Calculate total cost for this cart item
     @property
     def total_cost(self):
         return self.accessory.p_cost * self.quantity
@@ -34,10 +31,7 @@ class CartItem(models.Model):
         return f"{self.user.username} - {self.accessory.p_name} x {self.quantity}"
 
     class Meta:
-        # Ensure one user can't have duplicate items in cart
         unique_together = ('user', 'accessory')
-
-# Model for storing completed orders/bills
 class Bill(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
