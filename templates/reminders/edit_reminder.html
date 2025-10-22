@@ -1,13 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block extra-styles %}
 <!-- Ensure Tailwind is loaded in base.html or include CDN here if needed -->
 <link rel="stylesheet" href="{% static 'css/__reminders.css' %}" />
 {% endblock %}
-
 {% block title %}Edit {{ medicine.name }} Reminder{% endblock %}
-
 {% block content %}
 <div class="min-h-screen bg-gray-200 py-10 px-2 text-black">
     <div class="max-w-xl mx-auto">
