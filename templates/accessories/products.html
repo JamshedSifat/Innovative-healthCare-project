@@ -35,7 +35,6 @@
                         {% endif %}
                     </div>
 
-                    <!-- Product Info -->
                     <div class="product-info">
                         <h3 class="product-name">{{ product.p_name }}</h3>
 
@@ -55,7 +54,7 @@
 
                         <div class="product-vendor">🏢 Brand: {{ product.v_name }}</div>
 
-                        <!-- Add to Cart -->
+                
                         {% if user.is_authenticated and product.p_count > 0 %}
                             <form method="post" action="{% url 'accessories:add_to_cart' product.id %}" class="add-to-cart">
                                 {% csrf_token %}
@@ -91,7 +90,6 @@
             </div>
         {% endif %}
     {% else %}
-        <!-- No Products Found -->
         <div class="no-products">
             <h3>🔍 No Products Found</h3>
             {% if query %}
